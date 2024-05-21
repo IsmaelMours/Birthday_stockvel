@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: pms
+  datasource:
+    url: jdbc:mysql://localhost:3306/StokvelDB?createDatabaseIfNotExist=true
+    username: root
+    password: 7545590000
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    
+        
+application:
+  security:
+    jwt:
+      secret-key: p8gttsnjdpgvh29fgxsdghf58c05a0tykadogghxhbgyv0d6em7rll
+      expiration: 86400000
+      
+  mailing:
+    frontend:
+      activation-url: http://localhost:5173/activate-account
+      
+      
