@@ -1,6 +1,7 @@
-package com.ismael.birthday_stockvel.groupmember;
+package com.ismael.birthday_stockvel.joinrequest;
 
 import com.ismael.birthday_stockvel.birthdaygroup.BirthdayGroup;
+import com.ismael.birthday_stockvel.enum_status.ApprovalStatus;
 import com.ismael.birthday_stockvel.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,27 +13,28 @@ import java.util.Date;
 
 
 @Entity
-@Table(name = "group_members")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupMember {
+public class GroupJoinRequest {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
-    private Long memberId;
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "group_id")
-    private BirthdayGroup group;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "join_date")
-    private Date joinDate;
+    @ManyToOne
+    @JoinColumn(name = "group_id", nullable = false)
+    private BirthdayGroup group;
 
-    // Getters and setters
+    private Date requestDate;
+
+    @Enumerated(EnumType.STRING)
+    private ApprovalStatus approvalStatus;
+
+
 }

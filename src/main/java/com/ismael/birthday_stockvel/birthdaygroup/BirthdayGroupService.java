@@ -60,7 +60,7 @@ public class BirthdayGroupService {
             GroupMember groupMember = new GroupMember();
             groupMember.setUser(currentUser);
             groupMember.setGroup(birthdayGroup);
-            groupMember.setJoinDate(new Date());
+            groupMember.setJoinDate( new Date());
             groupMemberRepository.save(groupMember);
 
             // Return the saved birthday group

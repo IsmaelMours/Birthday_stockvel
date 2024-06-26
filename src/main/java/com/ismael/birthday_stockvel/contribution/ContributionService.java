@@ -6,10 +6,12 @@ import com.ismael.birthday_stockvel.groupmember.GroupMember;
 import com.ismael.birthday_stockvel.groupmember.GroupMemberRepository;
 import com.ismael.birthday_stockvel.user.User;
 import com.ismael.birthday_stockvel.user.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -28,35 +30,31 @@ public class ContributionService {
 
     private final ContributionRepository contributionRepository;
 
-    public void contributeToBirthdayGroup(Authentication authentication, Long groupId, double contributionAmount)
-    {
-        // Get the currently authenticated user
+    @Transactional
+    public void contributeToBirthdayMember(Authentication authentication, Long groupId) {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new IllegalArgumentException("User is not authenticated");
         }
-        String currentUsername = authentication.getName();
-        User contributor = userRepository.findByUserName(currentUsername);
 
-        // Retrieve the BirthdayGroup object using the provided ID
-        Optional<BirthdayGroup> optionalBirthdayGroup = birthdayGroupRepository.findById(groupId);
-        if (!optionalBirthdayGroup.isPresent()) {
-            throw new IllegalArgumentException("Birthday group not found with ID: " + groupId);
-        }
-        BirthdayGroup group = optionalBirthdayGroup.get();
+        User contributor = (User) authentication.getPrincipal();
+        BirthdayGroup group = birthdayGroupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("Birthday group not found with ID: " + groupId));
 
-        // Check if the user is a member of the group
-        if (!groupMemberRepository.existsByUserAndGroup(contributor, group)) {
-            throw new IllegalArgumentException("User is not a member of the group");
-        }
+        LocalDate currentDate = LocalDate.now();
+        int currentMonth = currentDate.getMonthValue();
 
-        // Create the contribution
+        List<GroupMember> groupMembers = group.getMembers();
+        GroupMember birthdayMember = groupMembers.stream()
+                .filter(member -> member.getUser().getBirthMonth() == currentMonth)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No member with a birthday this month"));
+
         Contribution contribution = new Contribution();
         contribution.setContributor(contributor);
         contribution.setGroup(group);
-        contribution.setContributionAmount(contributionAmount);
-        contribution.setContributionDate(new Date());
+        contribution.setContributionAmount(group.getContributionAmount());
+        contribution.setContributionDate(java.sql.Date.valueOf(currentDate));
 
-        // Save the contribution
         contributionRepository.save(contribution);
     }
 

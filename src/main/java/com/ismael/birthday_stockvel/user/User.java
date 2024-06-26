@@ -73,7 +73,7 @@ public class User implements UserDetails, Principal {
     @Column(columnDefinition = "LONGBLOB")
     private byte[]  profilePicture;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_groups",
             joinColumns = @JoinColumn(name = "user_id"),

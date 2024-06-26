@@ -17,14 +17,13 @@ public class ContributionController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/contribute/{groupId}")
-    public ResponseEntity<String> contributeToBirthdayGroup(Authentication authentication, @PathVariable Long groupId, @RequestParam double contributionAmount) {
+    public ResponseEntity<String> contributeToBirthdayMember(@PathVariable Long groupId,
+                                                             Authentication authentication) {
         try {
-            contributionService.contributeToBirthdayGroup(authentication, groupId, contributionAmount);
-            return ResponseEntity.ok("Contribution successful");
-        } catch (IllegalArgumentException e) {
+            contributionService.contributeToBirthdayMember(authentication, groupId);
+            return ResponseEntity.ok("Contribution successful.");
+        } catch (IllegalArgumentException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
